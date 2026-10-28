@@ -2,14 +2,21 @@
 
 import { useState } from 'react';
 import {
-  ArrowDown,
-  ArrowUp,
-  GripVertical,
-  Lock,
-  Plus,
-  Trash2,
-  X,
-} from 'lucide-react';
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { Lock, Plus } from 'lucide-react';
+import { SortableFormFieldCard } from '@/components/admin/sortable-form-field-card';
 import {
   ADMIN_FORM_FIELD_TYPES,
   MAX_CUSTOM_FORM_FIELDS,
@@ -18,6 +25,7 @@ import {
   fieldTypeLabel,
   moveAdminFormField,
   removeAdminFormField,
+  reorderAdminFormFields,
   updateAdminFormField,
   type AdminFormFieldDraft,
   type AdminFormFieldType,
@@ -58,6 +66,14 @@ export function FormBuilderStep({
   disabled?: boolean;
 }) {
   const [newType, setNewType] = useState<AdminFormFieldType>('text');
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 6 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
   const customCount = customFieldCount(fields);
   const atLimit = customCount >= MAX_CUSTOM_FORM_FIELDS;
   const customFields = fields.filter((field) => field.fieldKind === 'custom');
@@ -65,6 +81,15 @@ export function FormBuilderStep({
   function addField() {
     if (atLimit || disabled) return;
     onChange([...fields, createAdminFormField(newType)]);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    if (!event.over || event.active.id === event.over.id) return;
+    onChange(reorderAdminFormFields(
+      fields,
+      String(event.active.id),
+      String(event.over.id),
+    ));
   }
 
   return (
@@ -91,160 +116,49 @@ export function FormBuilderStep({
 
       {customFields.length > 0 ? (
         <div className="space-y-3">
-          {customFields.map((field, customIndex) => {
-            const choice = ['select', 'radio', 'checkbox'].includes(field.fieldType);
-            return (
-              <div
-                key={field.key}
-                className="rounded-2xl border border-outline-variant bg-surface-container-lowest p-4 shadow-[0_2px_8px_rgba(0,0,0,0.03)] sm:p-5"
-              >
-                <div className="flex items-start gap-3">
-                  <span className="mt-1 hidden rounded-md p-1 text-secondary sm:block">
-                    <GripVertical aria-hidden="true" className="h-4 w-4" />
-                  </span>
-
-                  <div className="min-w-0 flex-1 space-y-4">
-                    <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
-                      <div>
-                        <label htmlFor={`field-name-${field.key}`} className="sr-only">
-                          Field label
-                        </label>
-                        <input
-                          id={`field-name-${field.key}`}
-                          value={field.fieldName}
-                          onChange={(event) => onChange(updateAdminFormField(
-                            fields,
-                            field.key,
-                            { fieldName: event.target.value },
-                          ))}
-                          placeholder="Question label"
-                          maxLength={255}
-                          disabled={disabled}
-                          className={inputClassName}
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor={`field-type-${field.key}`} className="sr-only">
-                          Field type
-                        </label>
-                        <select
-                          id={`field-type-${field.key}`}
-                          value={field.fieldType}
-                          onChange={(event) => onChange(updateAdminFormField(
-                            fields,
-                            field.key,
-                            { fieldType: event.target.value as AdminFormFieldType },
-                          ))}
-                          disabled={disabled}
-                          className={inputClassName}
-                        >
-                          {ADMIN_FORM_FIELD_TYPES.map((type) => (
-                            <option key={type} value={type}>{fieldTypeLabel(type)}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    {choice ? (
-                      <div className="space-y-2 rounded-xl bg-surface-container-low/70 p-3">
-                        <p className="font-label-caps text-[10px] font-semibold uppercase tracking-[0.1em] text-secondary">
-                          Answer options
-                        </p>
-                        {field.options.map((option, optionIndex) => (
-                          <div key={`${field.key}-option-${optionIndex}`} className="flex items-center gap-2">
-                            <input
-                              value={option}
-                              onChange={(event) => {
-                                const options = [...field.options];
-                                options[optionIndex] = event.target.value;
-                                onChange(updateAdminFormField(fields, field.key, { options }));
-                              }}
-                              placeholder={`Option ${optionIndex + 1}`}
-                              disabled={disabled}
-                              aria-label={`Option ${optionIndex + 1} for ${field.fieldName}`}
-                              className={inputClassName}
-                            />
-                            <button
-                              type="button"
-                              aria-label={`Remove option ${optionIndex + 1}`}
-                              disabled={disabled || field.options.length <= 2}
-                              onClick={() => {
-                                const options = field.options.filter((_, index) => index !== optionIndex);
-                                onChange(updateAdminFormField(fields, field.key, { options }));
-                              }}
-                              className="rounded-lg p-2 text-secondary transition-colors hover:bg-surface-container hover:text-error focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-30"
-                            >
-                              <X aria-hidden="true" className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        ))}
-                        <button
-                          type="button"
-                          disabled={disabled}
-                          onClick={() => onChange(updateAdminFormField(
-                            fields,
-                            field.key,
-                            { options: [...field.options, `Option ${field.options.length + 1}`] },
-                          ))}
-                          className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold text-on-surface transition-colors hover:bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary"
-                        >
-                          <Plus aria-hidden="true" className="h-3.5 w-3.5" />
-                          Add option
-                        </button>
-                      </div>
-                    ) : null}
-
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-on-surface">
-                        <input
-                          type="checkbox"
-                          checked={field.isRequired}
-                          onChange={(event) => onChange(updateAdminFormField(
-                            fields,
-                            field.key,
-                            { isRequired: event.target.checked },
-                          ))}
-                          disabled={disabled}
-                          className="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
-                        />
-                        Required
-                      </label>
-
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          aria-label="Move question up"
-                          disabled={disabled || customIndex === 0}
-                          onClick={() => onChange(moveAdminFormField(fields, field.key, -1))}
-                          className="rounded-lg border border-outline-variant p-1.5 text-on-surface transition-colors hover:bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-30"
-                        >
-                          <ArrowUp aria-hidden="true" className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          aria-label="Move question down"
-                          disabled={disabled || customIndex === customFields.length - 1}
-                          onClick={() => onChange(moveAdminFormField(fields, field.key, 1))}
-                          className="rounded-lg border border-outline-variant p-1.5 text-on-surface transition-colors hover:bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-30"
-                        >
-                          <ArrowDown aria-hidden="true" className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          aria-label={`Remove ${field.fieldName}`}
-                          disabled={disabled}
-                          onClick={() => onChange(removeAdminFormField(fields, field.key))}
-                          className="ml-1 rounded-lg border border-outline-variant p-1.5 text-secondary transition-colors hover:border-red-200 hover:bg-red-50 hover:text-error focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-30"
-                        >
-                          <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <p className="flex items-center gap-1.5 px-1 font-description text-xs text-on-surface-variant">
+            <span aria-hidden="true" className="inline-block h-1 w-4 rounded-full bg-outline-variant" />
+            Drag the handle or use the arrow buttons to reorder questions.
+          </p>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={customFields.map((field) => field.key)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-3">
+                {customFields.map((field, customIndex) => (
+                  <SortableFormFieldCard
+                    key={field.key}
+                    field={field}
+                    index={customIndex}
+                    count={customFields.length}
+                    disabled={disabled}
+                    onPatch={(patch) => onChange(updateAdminFormField(fields, field.key, patch))}
+                    onOptionChange={(optionIndex, value) => {
+                      const options = [...field.options];
+                      options[optionIndex] = value;
+                      onChange(updateAdminFormField(fields, field.key, { options }));
+                    }}
+                    onRemoveOption={(optionIndex) => {
+                      const options = field.options.filter((_, index) => index !== optionIndex);
+                      onChange(updateAdminFormField(fields, field.key, { options }));
+                    }}
+                    onAddOption={() => onChange(updateAdminFormField(
+                      fields,
+                      field.key,
+                      { options: [...field.options, `Option ${field.options.length + 1}`] },
+                    ))}
+                    onRemove={() => onChange(removeAdminFormField(fields, field.key))}
+                    onMove={(direction) => onChange(moveAdminFormField(fields, field.key, direction))}
+                  />
+                ))}
               </div>
-            );
-          })}
+            </SortableContext>
+          </DndContext>
         </div>
       ) : (
         <div className="rounded-2xl border border-dashed border-outline-variant bg-surface-container-lowest px-5 py-8 text-center">

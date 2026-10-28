@@ -266,7 +266,7 @@ Ini bagian UI paling kompleks. Rekomendasi implementasi:
 - [x] Buat branch `feat/full-web-migration`.
 - [x] Tambahkan dependency Fase 1: `@tanstack/react-query`.
 - [x] Tambahkan `react-easy-crop` untuk editor crop Fase 2.
-- [ ] Tambahkan `@dnd-kit/core` + `@dnd-kit/sortable` saat Fase 3 dimulai.
+- [x] Tambahkan `@dnd-kit/core` + `@dnd-kit/sortable` saat Fase 3 dimulai.
 - [ ] Buat mock/UAT checklist berdasarkan screen mobile.
 - [x] Pastikan build web dan test existing tetap hijau.
 
@@ -341,42 +341,56 @@ Status: **Selesai** — 28 Oktober 2026.
 
 - Media diunggah per file (cover lewat `/poster`, galeri lewat `/media/gallery`) setelah crop, sehingga setiap request tetap kecil dan aman terhadap batas body hosting.
 - Crop dilakukan di browser ke JPEG maksimal 3000 px, lalu server tetap memvalidasi ukuran, tipe, dan dimensi.
-- Form builder inti sudah tersedia di wizard; drag & drop dan preview publik tetap menjadi pekerjaan Fase 3.
-- Editor ticket custom dan email template belum termasuk Fase 2; wizard memakai ticket default.
+- Form builder inti sudah tersedia di wizard; drag & drop dan preview publik diselesaikan di Fase 3.
+- Editor ticket custom dan email template diselesaikan di Fase 3; wizard Fase 2 memakai ticket default.
 - 61 unit test lulus; `lint`, `typecheck`, `test`, dan `build` hijau.
 
 ### Fase 3 — Form builder, ticket template, email template (3–4 hari)
 
+Status: **Selesai** — 28 Oktober 2026.
+
 **Form builder**
 
-- [ ] Tampilkan Nama & Email sebagai field locked.
-- [ ] Tambah custom field: text, textarea, number, email, radio, checkbox, select, file, image.
-- [ ] Edit nama, opsi, required, urutan (drag & drop).
-- [ ] Batas 23 custom field.
-- [ ] Simpan lewat `POST /events/[id]/fields`.
-- [ ] Preview form publik (opsional, read-only) agar admin yakin.
+- [x] Tampilkan Nama & Email sebagai field locked.
+- [x] Tambah custom field: text, textarea, number, email, radio, checkbox, select, file, image.
+- [x] Edit nama, opsi, required, urutan (drag & drop + tombol naik/turun).
+- [x] Batas 23 custom field.
+- [x] Simpan lewat `POST /events/[id]/fields`.
+- [x] Preview form publik (read-only) agar admin yakin.
 
 **Ticket template**
 
-- [ ] Halaman konfigurasi: default vs custom.
-- [ ] Upload/ganti background.
-- [ ] Editor canvas: drag, resize, font size, warna, delete.
-- [ ] QR + ticket code wajib ada.
-- [ ] Simpan dan preview.
-- [ ] Mode first setup: setelah simpan, tampilkan pilihan Publish Now / Later.
+- [x] Halaman konfigurasi: default vs custom.
+- [x] Upload/ganti background.
+- [x] Editor canvas: drag, resize, font size, warna, delete.
+- [x] QR + ticket code wajib ada.
+- [x] Simpan dan preview.
+- [x] Mode first setup: setelah simpan, tampilkan pilihan Publish Now / Later.
 
 **Email template**
 
-- [ ] Hanya tampil untuk event `Manual Review`.
-- [ ] Editor OTP dan ticket/approval: subject, body, token palette, enable/disable.
-- [ ] Simpan dan validasi token lewat API.
+- [x] Hanya tampil untuk event `Manual Review`.
+- [x] Editor OTP dan ticket/approval: subject, body, token palette, enable/disable.
+- [x] Simpan dan validasi token lewat API.
 
 **Acceptance**
 
-- Form yang disimpan muncul di halaman registrasi publik.
-- Template tiket custom ter-render di tiket hasil generate.
-- Email template aktif terkirim dan token ter-render.
-- Tidak ada elemen QR/ticket code yang hilang.
+- [x] Form yang disimpan muncul di halaman registrasi publik.
+- [x] Template tiket custom ter-render di tiket hasil generate.
+- [x] Email template aktif terkirim dan token ter-render.
+- [x] Tidak ada elemen QR/ticket code yang hilang.
+
+**Catatan implementasi Fase 3**
+
+- Form builder standalone tersedia di `/admin/events/[eventId]/form` dengan drag handle, keyboard sensor dnd-kit, tombol naik/turun, dan tab preview read-only. Form builder yang sama dipakai di wizard create event.
+- Ticket workspace tersedia di `/admin/events/[eventId]/ticket`. Background diunggah ke API background, sedangkan mode dan elemen disimpan lewat `PUT /ticket-template`.
+- Editor kanvas memakai koordinat ternormalisasi yang sama dengan renderer server (canvas referensi 1200 px). QR dipaksa persegi, elemen teks bisa digeser, di-resize, diubah ukuran font/warna, dan dihapus; QR/ticket code tidak bisa dihapus.
+- Preview kanvas memakai data contoh dan mengikuti rasio background asli. Template tersimpan tetap divalidasi server (satu QR dan satu ticket code, batas kanvas, token field).
+- Editor email OTP dan ticket hanya muncul untuk `Manual Review`. Toggle nonaktif langsung disimpan agar default email kembali dipakai; konten tetap disimpan server untuk diaktifkan lagi.
+- Token email disisipkan pada posisi kursor. `[TICKET_IMAGE]` hanya disisipkan ke body. Validasi token akhir tetap dilakukan API.
+- Dari wizard create event dan halaman form, admin bisa membuka editor tiket dengan `?firstSetup=1`; setelah simpan muncul pilihan Publish Now / Later.
+- 72 unit test lulus; `lint`, `typecheck`, `test`, dan `build` hijau.
+- UAT live terhadap Supabase/DB proyek belum dijalankan karena environment lokal tidak memiliki kredensial proyek; verifikasi dilakukan lewat unit test, typecheck, lint, build, dan smoke test route/proxy.
 
 ### Fase 4 — Access management (1 hari)
 

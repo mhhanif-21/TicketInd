@@ -4,6 +4,7 @@ import {
   defaultAdminFormFields,
   formFieldsFromEvent,
   moveAdminFormField,
+  reorderAdminFormFields,
   updateAdminFormField,
   validateAdminFormFields,
 } from '@/lib/admin/form-fields';
@@ -89,5 +90,25 @@ describe('admin form fields', () => {
     const moved = moveAdminFormField(fields, second.key, -1);
     expect(moved.map((field) => field.fieldName)).toEqual(['Nama', 'Email', 'Second', 'First']);
     expect(moveAdminFormField(fields, first.key, -1)).toBe(fields);
+  });
+
+  it('reorders custom fields by drag keys while keeping locked fields first', () => {
+    const base = defaultAdminFormFields();
+    const first = { ...createAdminFormField('text'), fieldName: 'First' };
+    const second = { ...createAdminFormField('text'), fieldName: 'Second' };
+    const third = { ...createAdminFormField('text'), fieldName: 'Third' };
+    const fields = [...base, first, second, third];
+
+    const reordered = reorderAdminFormFields(fields, first.key, third.key);
+    expect(reordered.map((field) => field.fieldName)).toEqual([
+      'Nama',
+      'Email',
+      'Second',
+      'Third',
+      'First',
+    ]);
+    expect(reordered.every((field) => field.fieldKind !== 'static_name' || field.fieldName === 'Nama'))
+      .toBe(true);
+    expect(reorderAdminFormFields(fields, 'missing', third.key)).toBe(fields);
   });
 });

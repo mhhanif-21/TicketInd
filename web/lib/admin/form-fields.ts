@@ -169,6 +169,28 @@ function customRange(fields: AdminFormFieldDraft[]): { start: number; end: numbe
     : { start, end: fields.length };
 }
 
+export function reorderAdminFormFields(
+  fields: AdminFormFieldDraft[],
+  activeKey: string,
+  overKey: string,
+): AdminFormFieldDraft[] {
+  if (activeKey === overKey) return fields;
+
+  const custom = fields.filter((field) => field.fieldKind === 'custom');
+  const from = custom.findIndex((field) => field.key === activeKey);
+  const to = custom.findIndex((field) => field.key === overKey);
+  if (from === -1 || to === -1) return fields;
+
+  const reordered = [...custom];
+  const [moved] = reordered.splice(from, 1);
+  reordered.splice(to, 0, moved);
+
+  let customIndex = 0;
+  return fields.map((field) => (
+    field.fieldKind === 'custom' ? reordered[customIndex++] : field
+  ));
+}
+
 export function moveAdminFormField(
   fields: AdminFormFieldDraft[],
   key: string,

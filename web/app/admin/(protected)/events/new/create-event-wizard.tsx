@@ -10,6 +10,7 @@ import {
   ArrowRight,
   CalendarDays,
   CheckCircle2,
+  ExternalLink,
   ImageIcon,
   ListChecks,
   Loader2,
@@ -705,6 +706,20 @@ export function CreateEventWizard() {
                 </div>
               </>
             )}
+            {eventId ? (
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-outline-variant bg-surface-container-low/60 px-3.5 py-3">
+                <p className="font-description text-xs text-on-surface-variant">
+                  Want your own background, canvas layout, and Manual Review emails?
+                </p>
+                <Link
+                  href={`/admin/events/${eventId}/ticket?firstSetup=1`}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-outline-variant bg-surface-container-lowest px-2.5 py-1.5 text-xs font-semibold text-on-surface transition-colors hover:bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
+                  Open full ticket editor
+                </Link>
+              </div>
+            ) : null}
             {ticketError ? (
               <p role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 font-description text-sm text-red-800">
                 {ticketError}
