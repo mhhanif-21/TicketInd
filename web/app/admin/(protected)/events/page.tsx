@@ -454,6 +454,8 @@ export default function AdminEventsPage() {
               onPageChange={changePage}
               onLimitChange={(limit) => updateFilter({ limit })}
               disabled={isFetching}
+              itemLabel="events"
+              itemLabelSingular="event"
             />
           ) : null}
         </section>

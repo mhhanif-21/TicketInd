@@ -158,8 +158,8 @@ export default function AdminEventDetailPage() {
       href: `/admin/events/${event.id}/participants`,
       icon: Users,
       title: 'Participants & review',
-      description: 'Review registrations and issue tickets.',
-      available: false,
+      description: 'Review registrations, issue tickets, and export participant data.',
+      available: true,
     },
   ];
 

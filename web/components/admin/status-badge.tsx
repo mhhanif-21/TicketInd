@@ -58,3 +58,30 @@ export function StatusBadge({ status, className }: { status: string; className?:
     </span>
   );
 }
+
+export function AttendanceBadge({
+  attendance,
+  className,
+}: {
+  attendance: string;
+  className?: string;
+}) {
+  const present = attendance === 'Present';
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-label-caps text-[10px] font-semibold uppercase tracking-[0.08em]',
+        present
+          ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+          : 'border-outline-variant bg-surface-container text-on-surface-variant',
+        className,
+      )}
+    >
+      <span
+        aria-hidden="true"
+        className={cn('h-1.5 w-1.5 rounded-full', present ? 'bg-emerald-500' : 'bg-secondary')}
+      />
+      {present ? 'Present' : 'Not present'}
+    </span>
+  );
+}

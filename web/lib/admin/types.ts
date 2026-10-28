@@ -177,6 +177,116 @@ export interface AdminEventStatsResponse {
   data: AdminEventStats;
 }
 
+export type ParticipantStatus = 'Draft' | 'Pending' | 'Accepted' | 'Rejected' | 'Expired';
+export type ParticipantFilterStatus = 'Draft' | 'Pending' | 'Accepted' | 'Rejected';
+export type ParticipantAttendance = 'Present' | 'Absent';
+export type ParticipantAttendanceFilter = 'present' | 'absent';
+export type ParticipantSort = 'asc' | 'desc';
+export type ParticipantTicketJobStatus =
+  | 'queued'
+  | 'publishing'
+  | 'published'
+  | 'processing'
+  | 'failed'
+  | 'completed'
+  | 'cancelled';
+
+export interface AdminParticipant {
+  id: string;
+  eventId: string;
+  name: string;
+  email: string;
+  answers: Record<string, unknown> | null;
+  answerFieldLabels: Record<string, unknown> | null;
+  status: ParticipantStatus;
+  ticketCode: string | null;
+  qrCodeUrl: string | null;
+  presenceStatus: ParticipantAttendance;
+  createdAt: string;
+  updatedAt: string;
+  ticketJobStatus: ParticipantTicketJobStatus | null;
+  ticketJobLastError: string | null;
+}
+
+export interface AdminParticipantFilters {
+  page: number;
+  limit: number;
+  search: string;
+  status: ParticipantFilterStatus | 'all';
+  attendance: ParticipantAttendanceFilter | 'all';
+  sort: ParticipantSort;
+  startDate: string | null;
+  endDate: string | null;
+}
+
+export interface AdminParticipantListResponse {
+  status: 'success';
+  data: AdminParticipant[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface AdminParticipantDetailResponse {
+  status: 'success';
+  data: AdminParticipant;
+}
+
+export interface AdminParticipantFileResponse {
+  status: 'success';
+  data: {
+    file_name: string;
+    mime_type: string;
+    url: string;
+    expires_at: string;
+  };
+}
+
+export interface AdminParticipantReviewResponse {
+  status: 'success';
+  message?: string;
+  data?: {
+    registrationId: string;
+    jobId: string;
+    jobStatus: ParticipantTicketJobStatus;
+  };
+}
+
+export interface AdminParticipantTicketRetryResponse {
+  status: 'success';
+  message?: string;
+  data?: {
+    registrationId: string;
+    jobId: string;
+    jobStatus: ParticipantTicketJobStatus;
+  };
+}
+
+export interface AdminExportTriggerResponse {
+  status: 'success';
+  data: {
+    job_id: string;
+    status: string;
+  };
+}
+
+export interface AdminExportStatusResponse {
+  status: 'success';
+  data: {
+    id: string;
+    status: 'pending' | 'publishing' | 'published' | 'processing' | 'completed' | 'failed';
+    file_url: string | null;
+    error: string | null;
+    retryable: boolean;
+    attempts: number;
+    created_at: string;
+    updated_at: string;
+  };
+}
+
 export interface DashboardEventSummary {
   id: string;
   name: string;

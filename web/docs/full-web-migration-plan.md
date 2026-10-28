@@ -422,26 +422,42 @@ Status: **Selesai** — 28 Oktober 2026.
 
 ### Fase 5 — Peserta, review, export (2–3 hari)
 
-- [ ] Tabel peserta: nama, email, organisasi, status, kehadiran, tanggal.
-- [ ] Search debounce, filter status + attendance + rentang tanggal, sort.
-- [ ] Pagination server-side (limit 15/25/50).
-- [ ] Aksi download tiket untuk peserta Accepted.
-- [ ] Export CSV: trigger job, polling status, buka file, error/timeout state.
-- [ ] Detail peserta via URL langsung (bukan state transient):
+Status: **Selesai** — 28 Oktober 2026.
+
+- [x] Tabel peserta: nama, email, organisasi, status, kehadiran, tanggal.
+- [x] Search debounce, filter status + attendance + rentang tanggal, sort.
+- [x] Pagination server-side (limit 15/25/50).
+- [x] Aksi download tiket untuk peserta Accepted.
+- [x] Export CSV: trigger job, polling status, buka file, error/timeout state.
+- [x] Detail peserta via URL langsung (bukan state transient):
   - Profil + status + waktu registrasi.
   - Semua jawaban form (termasuk label snapshot).
   - File/gambar: buka preview atau download via signed URL.
   - Approve/Reject untuk Pending.
   - Retry ticket issuance untuk Accepted yang gagal.
-- [ ] Setelah review, kembali ke list dan refresh data.
-- [ ] Empty state dan error state.
+- [x] Setelah review, kembali ke list dan refresh data.
+- [x] Empty state dan error state.
 
 **Acceptance**
 
-- Approve/Reject mengubah status dan memicu tiket.
-- Detail peserta tetap bisa dibuka dari URL baru.
-- File peserta bisa dilihat tanpa error.
-- Export CSV selesai dan file bisa diunduh.
+- [x] Approve/Reject mengubah status dan memicu tiket.
+- [x] Detail peserta tetap bisa dibuka dari URL baru.
+- [x] File peserta bisa dilihat tanpa error.
+- [x] Export CSV selesai dan file bisa diunduh.
+
+**Catatan implementasi Fase 5**
+
+- Daftar peserta tersedia di `/admin/events/[eventId]/participants` dengan tabel desktop dan card list mobile. Kolom mencakup identitas, organisasi, status, kehadiran, dan waktu registrasi.
+- Search memakai debounce 350 ms. Filter status dan attendance dikirim bersama; filter tanggal registrasi adalah mode terpisah sesuai kontrak API. Memilih salah satu mode otomatis membersihkan mode lainnya agar request tidak ditolak.
+- Pagination server-side memakai limit 15/25/50. `Pagination` sekarang menerima label item agar teks “participants” konsisten.
+- Detail peserta memakai route langsung `/admin/events/[eventId]/participants/[registrationId]`, sehingga refresh atau tautan langsung tetap membuka data lengkap.
+- Jawaban form memakai snapshot `answerFieldLabels`; label historis tetap stabil walau form event diubah. Organisasi diambil dari label yang mengandung organisasi/organization/company/perusahaan/instansi.
+- Berkas peserta diambil lewat endpoint signed URL dan ditampilkan dalam dialog preview untuk gambar; PDF/berkas lain bisa dibuka di tab baru atau diunduh.
+- Approve/Reject memakai dialog konfirmasi. Approve mengantrekan ticket generation; setelah aksi berhasil admin kembali ke daftar dan query diinvalidasi. Jika API menerima registrasi tetapi gagal menerbitkan job (503), halaman detail tetap terbuka dengan status Accepted dan tombol retry.
+- Retry tiket hanya ditampilkan untuk Accepted yang gagal atau legacy tanpa job. Tombol download tiket memakai URL Supabase dengan flag `download`.
+- Export CSV membuat durable job lewat `POST /events/[id]/export`, polling setiap 3 detik maksimal 15 kali. Status ready menyediakan tombol download dengan signed URL 5 menit; timeout bisa dicek ulang; kegagalan bisa diulang.
+- 83 unit test lulus; `lint`, `typecheck`, `test`, dan `build` hijau.
+- UAT live approve/reject, retry tiket, signed file, dan export CSV belum dijalankan karena environment lokal tidak memiliki kredensial proyek/Supabase.
 
 ### Fase 6 — Oversight, manual book, polish (1–2 hari)
 

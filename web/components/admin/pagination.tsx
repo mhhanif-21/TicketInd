@@ -24,6 +24,8 @@ export function Pagination({
   onLimitChange,
   disabled = false,
   limitOptions = [10, 20, 50],
+  itemLabel = 'items',
+  itemLabelSingular,
 }: {
   page: number;
   limit: number;
@@ -33,11 +35,14 @@ export function Pagination({
   onLimitChange?: (limit: number) => void;
   disabled?: boolean;
   limitOptions?: number[];
+  itemLabel?: string;
+  itemLabelSingular?: string;
 }) {
   const safeTotalPages = Math.max(1, totalPages);
   const startItem = total === 0 ? 0 : (page - 1) * limit + 1;
   const endItem = Math.min(page * limit, total);
   const pages = pageWindow(page, safeTotalPages);
+  const noun = total === 1 ? (itemLabelSingular ?? itemLabel) : itemLabel;
 
   return (
     <div className="flex flex-col gap-3 border-t border-outline-variant px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -47,13 +52,14 @@ export function Pagination({
         <span className="font-semibold text-on-surface">{endItem}</span>
         {' of '}
         <span className="font-semibold text-on-surface">{total}</span>
-        {' events'}
+        {' '}
+        {noun}
       </p>
 
       <div className="flex flex-wrap items-center gap-3">
         {onLimitChange ? (
           <label className="flex items-center gap-2 text-xs text-on-surface-variant">
-            <span className="sr-only">Events per page</span>
+            <span className="sr-only">Items per page</span>
             <select
               value={limit}
               onChange={(event) => onLimitChange(Number(event.target.value))}
