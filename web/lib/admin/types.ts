@@ -77,6 +77,14 @@ export interface AdminEventDeleteResponse {
   message: string;
 }
 
+export interface AdminPinRegenerationResponse {
+  status: 'success';
+  message?: string;
+  data: {
+    pin: string;
+  };
+}
+
 export interface AdminMediaRow {
   id: string;
   role: 'cover' | 'gallery';

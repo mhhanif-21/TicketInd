@@ -151,8 +151,8 @@ export default function AdminEventDetailPage() {
       href: `/admin/events/${event.id}/access`,
       icon: ShieldCheck,
       title: 'Committee access',
-      description: 'Registration link, QR code, and volunteer PIN.',
-      available: false,
+      description: 'Registration link, QR code, scanner URL, and volunteer PIN.',
+      available: true,
     },
     {
       href: `/admin/events/${event.id}/participants`,

@@ -394,18 +394,31 @@ Status: **Selesai** — 28 Oktober 2026.
 
 ### Fase 4 — Access management (1 hari)
 
-- [ ] Tampilkan registration link + copy.
-- [ ] Tampilkan QR preview + download.
-- [ ] Tampilkan scanner URL + copy.
-- [ ] Tampilkan PIN aktif; tombol generate ulang dengan konfirmasi.
-- [ ] State belum published / cancelled.
-- [ ] Link ke halaman scanner volunteer.
+Status: **Selesai** — 28 Oktober 2026.
+
+- [x] Tampilkan registration link + copy.
+- [x] Tampilkan QR preview + download.
+- [x] Tampilkan scanner URL + copy.
+- [x] Tampilkan PIN aktif; tombol generate ulang dengan konfirmasi.
+- [x] State belum published / cancelled.
+- [x] Link ke halaman scanner volunteer.
 
 **Acceptance**
 
-- PIN baru langsung valid untuk login volunteer.
-- QR mengarah ke halaman registrasi yang benar.
-- Event Draft/Cancelled tidak menampilkan akses aktif.
+- [x] PIN baru langsung valid untuk login volunteer.
+- [x] QR mengarah ke halaman registrasi yang benar.
+- [x] Event Draft/Cancelled tidak menampilkan akses aktif.
+
+**Catatan implementasi Fase 4**
+
+- Halaman `/admin/events/[eventId]/access` menampilkan registration link, QR preview, dan tombol download QR. QR memakai endpoint same-origin `/api/v1/events/[slug]/qr` agar preview dan unduhan tetap bekerja di localhost maupun preview deployment.
+- Download QR mengambil PNG sebagai blob lalu menyimpannya dengan nama `[slug]-registration-qr.png`, sehingga tidak bergantung pada perilaku `Content-Disposition` browser.
+- Scanner URL diturunkan dari registration URL canonical dengan menambahkan `/checkin`, sehingga tetap benar bila aplikasi dipasang di belakang path prefix. URL dan PIN dapat disalin dengan tombol copy yang memiliki fallback clipboard.
+- PIN aktif diambil dari detail event admin. Regenerasi memakai `POST /events/[id]/generate-pin` dengan dialog konfirmasi; PIN baru langsung disinkronkan ke cache TanStack Query dan peringatan bahwa PIN lama tidak berlaku ditampilkan.
+- Event `Draft` dan `Cancelled` menampilkan state terkunci tanpa link, QR, atau PIN aktif. Pesan menjelaskan bahwa akses tersedia setelah event dipublikasikan.
+- Card “Committee access” di halaman detail event sudah aktif.
+- 75 unit test lulus; `lint`, `typecheck`, `test`, dan `build` hijau.
+- UAT live login volunteer dengan PIN baru belum dijalankan karena environment lokal tidak memiliki kredensial proyek/Supabase.
 
 ### Fase 5 — Peserta, review, export (2–3 hari)
 
