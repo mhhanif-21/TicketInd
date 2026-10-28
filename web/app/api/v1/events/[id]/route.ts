@@ -27,6 +27,7 @@ import { queueStorageCleanupJobsTx } from '@/lib/storage/cleanupLifecycle';
 import { EXPORT_STORAGE_BUCKET, STORAGE_BUCKETS } from '@/lib/storage/buckets';
 import { getPublicStorageObjectPath } from '@/lib/storage/publicObjectPath';
 import { getAuthenticatedAdmin } from '@/lib/security/adminRoute';
+import { serializeAdminEvent } from '@/lib/events/serializeAdminEvent';
 
 export const runtime = 'nodejs';
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -240,7 +241,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ status: 'error', message: 'Event not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ status: 'success', message: 'Event updated successfully', data: updatedEvent });
+    return NextResponse.json({ status: 'success', message: 'Event updated successfully', data: serializeAdminEvent(updatedEvent) });
   } catch (error: unknown) {
     if (error instanceof EventValidationError) {
       return NextResponse.json(

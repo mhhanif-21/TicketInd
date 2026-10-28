@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
+import "react-easy-crop/react-easy-crop.css";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",

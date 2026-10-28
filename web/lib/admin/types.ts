@@ -47,6 +47,63 @@ export interface AdminEventListResponse {
   meta: EventPageMeta;
 }
 
+export interface AdminEventWriteResponse {
+  status: 'success';
+  message?: string;
+  data: AdminEvent;
+  idempotent_replay?: boolean;
+}
+
+export interface AdminEventUpdateResponse {
+  status: 'success';
+  message?: string;
+  data: AdminEvent;
+}
+
+export interface AdminEventUpdatePayload {
+  name?: string;
+  location?: string;
+  capacity?: number;
+  date?: string;
+  description?: string | null;
+  registration_mode?: EventRegistrationMode;
+  poster_aspect_mode?: PosterAspectMode;
+  whatsapp_group_url?: string | null;
+  status?: EventStatus;
+}
+
+export interface AdminEventDeleteResponse {
+  status: 'success';
+  message: string;
+}
+
+export interface AdminMediaRow {
+  id: string;
+  role: 'cover' | 'gallery';
+  displayOrder: number;
+  publicUrl: string;
+}
+
+export interface AdminEventMediaUploadResponse {
+  status: 'success';
+  message?: string;
+  data: {
+    posterUrl: string;
+    media: Array<{
+      role: 'cover' | 'gallery';
+      displayOrder: number;
+      publicUrl: string;
+    }>;
+  };
+}
+
+export interface AdminEventGalleryAppendResponse {
+  status: 'success';
+  data?: {
+    media?: AdminMediaRow[];
+  };
+}
+
 export interface AdminEventDetail {
   id: string;
   name: string;

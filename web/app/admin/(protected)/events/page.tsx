@@ -7,6 +7,7 @@ import {
   ChevronRight,
   CloudOff,
   Loader2,
+  Pencil,
   Plus,
   RefreshCw,
   Search,
@@ -206,14 +207,24 @@ export default function AdminEventsPage() {
       headerClassName: 'text-right',
       className: 'text-right',
       render: (event) => (
-        <Link
-          href={`/admin/events/${event.id}`}
-          aria-label={`Open ${event.name}`}
-          className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-on-surface transition-colors hover:bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary"
-        >
-          Open
-          <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
-        </Link>
+        <div className="flex items-center justify-end gap-1">
+          <Link
+            href={`/admin/events/${event.id}/edit`}
+            aria-label={`Edit ${event.name}`}
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
+            Edit
+          </Link>
+          <Link
+            href={`/admin/events/${event.id}`}
+            aria-label={`Open ${event.name}`}
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold text-on-surface transition-colors hover:bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            Open
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
+          </Link>
+        </div>
       ),
     },
   ];

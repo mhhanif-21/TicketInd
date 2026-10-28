@@ -4,6 +4,7 @@ import { events } from '@/db/schema';
 import { and, asc, count, desc, eq, gte, ilike, lte, or, sql } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { EventValidationError, validateEventCreatePayload } from '@/lib/validation/event';
+import { serializeAdminEvent } from '@/lib/events/serializeAdminEvent';
 
 export const runtime = 'nodejs';
 
@@ -111,7 +112,7 @@ export async function POST(req: Request) {
       return NextResponse.json({
         status: 'success',
         message: 'Previous event reused',
-        data: existingByKey,
+        data: serializeAdminEvent(existingByKey),
         idempotent_replay: true,
       }, { status: 200 });
     }
@@ -169,7 +170,7 @@ export async function POST(req: Request) {
         return NextResponse.json({
           status: 'success',
           message: 'Previous event reused',
-          data: replayedEvent,
+          data: serializeAdminEvent(replayedEvent),
           idempotent_replay: true,
         }, { status: 200 });
       }
@@ -177,7 +178,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(
-      { status: 'success', message: 'Event created successfully', data: newEvent, idempotent_replay: false },
+      { status: 'success', message: 'Event created successfully', data: serializeAdminEvent(newEvent), idempotent_replay: false },
       { status: 201 }
     );
   } catch (error: unknown) {

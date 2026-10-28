@@ -265,7 +265,8 @@ Ini bagian UI paling kompleks. Rekomendasi implementasi:
 
 - [x] Buat branch `feat/full-web-migration`.
 - [x] Tambahkan dependency Fase 1: `@tanstack/react-query`.
-- [ ] Tambahkan `react-easy-crop` dan `@dnd-kit/core` + `@dnd-kit/sortable` saat Fase 2–3 dimulai.
+- [x] Tambahkan `react-easy-crop` untuk editor crop Fase 2.
+- [ ] Tambahkan `@dnd-kit/core` + `@dnd-kit/sortable` saat Fase 3 dimulai.
 - [ ] Buat mock/UAT checklist berdasarkan screen mobile.
 - [x] Pastikan build web dan test existing tetap hijau.
 
@@ -313,26 +314,36 @@ Status: **Selesai** — 28 Oktober 2026.
 
 ### Fase 2 — Create/edit event + media (2–3 hari)
 
-- [ ] `/admin/events/new` sebagai wizard 4 langkah:
+Status: **Selesai** — 28 Oktober 2026.
+
+- [x] `/admin/events/new` sebagai wizard 4 langkah:
   1. Detail event + poster/gallery.
-  2. Form builder.
-  3. Ticket template.
+  2. Form builder inti (Nama & Email locked, custom field, opsi, urutan, batas 23).
+  3. Ticket template default (editor custom tetap di Fase 3).
   4. Review & publish.
-- [ ] Form field: nama, lokasi, kapasitas, tanggal, deskripsi, mode registrasi, WhatsApp group, poster aspect.
-- [ ] Upload multiple poster + crop interaktif.
-- [ ] Simpan event dengan `Idempotency-Key`.
-- [ ] Setelah event dibuat, simpan `eventId` dan lanjut ke step berikutnya.
-- [ ] `/admin/events/[id]/edit`: form edit + media manager (reorder, hapus, tambah, ganti cover).
-- [ ] Alur retry jika metadata tersimpan tetapi upload media gagal.
-- [ ] Tampilkan status Draft/Published/Cancelled dan aksi publish/cancel/delete di halaman detail.
-- [ ] Konfirmasi keras untuk cancel dan delete permanen.
+- [x] Form field: nama, lokasi, kapasitas, tanggal, deskripsi, mode registrasi, WhatsApp group, poster aspect.
+- [x] Upload multiple poster + crop interaktif (react-easy-crop).
+- [x] Simpan event dengan `Idempotency-Key`.
+- [x] Setelah event dibuat, simpan `eventId` di URL dan lanjut ke step berikutnya; draft bisa dilanjutkan setelah refresh.
+- [x] `/admin/events/[id]/edit`: form edit + media manager (reorder, hapus, tambah, ganti cover).
+- [x] Alur retry jika metadata tersimpan tetapi upload media gagal.
+- [x] Tampilkan status Draft/Published/Cancelled dan aksi publish/cancel/delete di halaman detail.
+- [x] Konfirmasi keras untuk cancel dan delete permanen (delete memerlukan nama event).
 
 **Acceptance**
 
-- Event baru bisa dibuat lengkap dengan poster.
-- Event bisa diedit tanpa kehilangan gallery.
-- Publish mengubah status dan menghasilkan PIN scanner.
-- Cancel dan delete berjalan sesuai lifecycle API.
+- [x] Event baru bisa dibuat lengkap dengan poster.
+- [x] Event bisa diedit tanpa kehilangan gallery.
+- [x] Publish mengubah status dan menghasilkan PIN scanner.
+- [x] Cancel dan delete berjalan sesuai lifecycle API.
+
+**Catatan implementasi Fase 2**
+
+- Media diunggah per file (cover lewat `/poster`, galeri lewat `/media/gallery`) setelah crop, sehingga setiap request tetap kecil dan aman terhadap batas body hosting.
+- Crop dilakukan di browser ke JPEG maksimal 3000 px, lalu server tetap memvalidasi ukuran, tipe, dan dimensi.
+- Form builder inti sudah tersedia di wizard; drag & drop dan preview publik tetap menjadi pekerjaan Fase 3.
+- Editor ticket custom dan email template belum termasuk Fase 2; wizard memakai ticket default.
+- 61 unit test lulus; `lint`, `typecheck`, `test`, dan `build` hijau.
 
 ### Fase 3 — Form builder, ticket template, email template (3–4 hari)
 

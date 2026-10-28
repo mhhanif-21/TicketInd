@@ -32,6 +32,7 @@ function fallbackMessage(status: number): string {
   if (status === 0) return 'Unable to reach the server. Check your connection and try again.';
   if (status === 401 || status === 403) return 'Your session has ended. Please sign in again.';
   if (status === 404) return 'The requested data could not be found.';
+  if (status === 413) return 'The upload is too large. Use a smaller image and try again.';
   if (status === 408 || status === 429) return 'The server is busy. Please try again in a moment.';
   if (status >= 500) return 'The server is temporarily unavailable. Please try again.';
   return 'Something went wrong. Please try again.';
