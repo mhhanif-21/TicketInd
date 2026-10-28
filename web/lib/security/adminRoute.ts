@@ -1,5 +1,9 @@
 import { isAdminUser, type UserLike } from '@/lib/security/auth';
 import { supabase } from '@/lib/supabase';
+import {
+  isCookieAuthenticatedMutationAllowed,
+  resolveAdminAccessCredential,
+} from '@/lib/security/adminCookies';
 
 const ADMIN_AUTH_TIMEOUT_MS = 8_000;
 
@@ -16,13 +20,16 @@ async function withTimeout<T>(operation: Promise<T>, timeoutMs: number): Promise
 }
 
 export async function getAuthenticatedAdmin(request: Request): Promise<UserLike | null> {
-  const authorization = request.headers.get('authorization')?.trim() ?? '';
-  const token = authorization.startsWith('Bearer ') ? authorization.slice('Bearer '.length).trim() : '';
-  if (!token) return null;
+  const credential = resolveAdminAccessCredential(request);
+  if (!credential.token) return null;
+
+  // Cookie-authenticated mutations must come from this application. Bearer
+  // clients are unaffected because they do not rely on ambient credentials.
+  if (!isCookieAuthenticatedMutationAllowed(request, credential)) return null;
 
   try {
     const { data, error } = await withTimeout(
-      supabase.auth.getUser(token),
+      supabase.auth.getUser(credential.token),
       ADMIN_AUTH_TIMEOUT_MS,
     );
     if (error || !isAdminUser(data.user)) return null;

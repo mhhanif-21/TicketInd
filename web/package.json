@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
+    "@tanstack/react-query": "^5.105.0",
     "@upstash/qstash": "^2.11.2",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",

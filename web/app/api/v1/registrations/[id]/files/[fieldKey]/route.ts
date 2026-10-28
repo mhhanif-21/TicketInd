@@ -32,7 +32,7 @@ function safeParticipantFileMime(answer: Record<string, unknown>, fileName: stri
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string; fieldKey: string }> }) {
   if (!await getAuthenticatedAdmin(request)) {
-    return NextResponse.json({ status: 'error', code: 'REGISTRATION_FILE_ACCESS_DENIED', message: 'Unauthorized' }, { status: 403 });
+    return NextResponse.json({ status: 'error', code: 'REGISTRATION_FILE_ACCESS_DENIED', message: 'Unauthorized' }, { status: 401 });
   }
 
   try {

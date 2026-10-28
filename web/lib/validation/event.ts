@@ -6,6 +6,7 @@ const MAX_LOCATION_LENGTH = 255;
 const MAX_DESCRIPTION_LENGTH = 10_000;
 const MAX_CAPACITY = 1_000_000;
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const RESERVED_EVENT_SLUGS = new Set(['admin', 'api']);
 const WHATSAPP_GROUP_HOSTS = new Set([
   'chat.whatsapp.com',
   'wa.me',
@@ -111,6 +112,13 @@ function parseSlug(value: unknown, name: string): string {
     throw new EventValidationError(
       'EVENT_SLUG_INVALID',
       'Slug acara harus berupa huruf kecil, angka, dan tanda hubung yang valid.',
+      'slug',
+    );
+  }
+  if (RESERVED_EVENT_SLUGS.has(slug)) {
+    throw new EventValidationError(
+      'EVENT_SLUG_RESERVED',
+      'Slug ini dicadangkan untuk halaman aplikasi. Gunakan slug lain.',
       'slug',
     );
   }

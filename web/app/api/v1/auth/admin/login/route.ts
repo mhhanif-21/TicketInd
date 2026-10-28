@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { isAdminUser } from '@/lib/security/auth';
 import { serializeAdminSession } from '@/lib/security/adminSession';
+import { setAdminSessionCookies } from '@/lib/security/adminCookies';
 
 export const runtime = 'nodejs';
 
@@ -36,14 +37,19 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         status: 'success',
         data: serializeAdminSession(data.session, data.user),
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: { 'Cache-Control': 'no-store' },
+      }
     );
-  } catch (error: any) {
+    setAdminSessionCookies(response, data.session);
+    return response;
+  } catch {
     return NextResponse.json(
       { status: 'error', message: 'Internal server error' },
       { status: 500 }

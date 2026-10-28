@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { events } from '@/db/schema';
-import { and, asc, count, desc, eq, gte, ilike, lte, or } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, ilike, lte, or, sql } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { EventValidationError, validateEventCreatePayload } from '@/lib/validation/event';
 
@@ -235,7 +235,26 @@ export async function GET(req: Request) {
     }
     const where = conditions.length === 0 ? undefined : and(...conditions);
     const [totalRow] = await db.select({ value: count() }).from(events).where(where);
-    const query = db.select().from(events).where(where);
+    const query = db.select({
+      id: events.id,
+      name: events.name,
+      slug: events.slug,
+      description: events.description,
+      location: events.location,
+      date: events.date,
+      posterUrl: events.posterUrl,
+      posterAspectMode: events.posterAspectMode,
+      capacity: events.capacity,
+      registrationMode: events.registrationMode,
+      whatsappGroupUrl: events.whatsappGroupUrl,
+      status: events.status,
+      createdAt: events.createdAt,
+      updatedAt: events.updatedAt,
+      registrantsCount: sql<number>`(
+        SELECT COUNT(*)::int FROM registrations r
+        WHERE r.event_id = ${events.id}
+      )`,
+    }).from(events).where(where);
     const orderedQuery = sort === 'date_asc'
       ? query.orderBy(asc(events.date), asc(events.id))
       : sort === 'created_desc'

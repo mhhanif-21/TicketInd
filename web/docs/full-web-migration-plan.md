@@ -264,40 +264,52 @@ Ini bagian UI paling kompleks. Rekomendasi implementasi:
 ### Fase 0 — Persiapan (0.5 hari)
 
 - [x] Buat branch `feat/full-web-migration`.
-- [ ] Tambahkan dependency: `@tanstack/react-query`, `react-easy-crop`, `@dnd-kit/core` + `@dnd-kit/sortable` (form builder), dan dev dependency testing.
+- [x] Tambahkan dependency Fase 1: `@tanstack/react-query`.
+- [ ] Tambahkan `react-easy-crop` dan `@dnd-kit/core` + `@dnd-kit/sortable` saat Fase 2–3 dimulai.
 - [ ] Buat mock/UAT checklist berdasarkan screen mobile.
-- [ ] Pastikan build web dan test existing tetap hijau.
+- [x] Pastikan build web dan test existing tetap hijau.
 
 ### Fase 1 — Auth, shell, dashboard, daftar event (2–3 hari)
 
+Status: **Selesai** — 28 Oktober 2026.
+
 **Backend/auth**
 
-- [ ] Tambahkan util cookie admin (`web/lib/security/adminCookies.ts`).
-- [ ] Update login route untuk set cookie.
-- [ ] Update refresh route untuk baca/tulis cookie.
-- [ ] Buat `logout` dan `session` route.
-- [ ] Update `getAuthenticatedAdmin` agar mendukung cookie.
-- [ ] Update middleware untuk guard `/admin` dan ekstraksi token cookie.
-- [ ] Tambahkan proteksi slug `admin`.
+- [x] Tambahkan util cookie admin (`web/lib/security/adminCookies.ts`).
+- [x] Update login route untuk set cookie.
+- [x] Update refresh route untuk baca/tulis cookie.
+- [x] Buat `logout` dan `session` route.
+- [x] Update `getAuthenticatedAdmin` agar mendukung cookie.
+- [x] Update middleware untuk guard `/admin` dan ekstraksi token cookie.
+- [x] Tambahkan proteksi slug `admin`.
 
 **Frontend**
 
-- [ ] `web/app/admin/login/page.tsx` — form email/password, error, loading, redirect `next`.
-- [ ] `web/app/admin/(protected)/layout.tsx` — auth provider + admin shell.
-- [ ] `web/components/admin/admin-shell.tsx` — sidebar, topbar, user menu, logout.
-- [ ] `web/lib/admin/auth-provider.tsx` — bootstrap session, redirect, logout.
-- [ ] `web/lib/admin/api.ts` + query provider.
-- [ ] `/admin` dashboard: 3 stat card + recent events + upcoming events.
-- [ ] `/admin/events`: search debounce, sort, status filter, pagination, empty/error state, tombol Create.
-- [ ] Toast system dan confirm dialog.
+- [x] `web/app/admin/login/page.tsx` — form email/password, error, loading, redirect `next`.
+- [x] `web/app/admin/(protected)/layout.tsx` — auth provider + admin shell.
+- [x] `web/components/admin/admin-shell.tsx` — sidebar, topbar, user menu, logout.
+- [x] `web/lib/admin/auth-provider.tsx` — bootstrap session, redirect, logout.
+- [x] `web/lib/admin/api.ts` + query provider.
+- [x] `/admin` dashboard: 3 stat card + recent events + upcoming events.
+- [x] `/admin/events`: search debounce, sort, status filter, pagination, empty/error state, tombol Create.
+- [x] Toast system dan confirm dialog.
 
 **Acceptance**
 
-- Login/logout berfungsi.
-- Session bertahan setelah refresh halaman.
-- Access token expired → refresh otomatis; refresh invalid → kembali ke login.
-- Halaman `/admin` tidak bisa diakses tanpa session.
-- Daftar event menampilkan data admin (termasuk Draft/Cancelled).
+- [x] Login/logout berfungsi.
+- [x] Session bertahan setelah refresh halaman.
+- [x] Access token expired → refresh otomatis; refresh invalid → kembali ke login.
+- [x] Halaman `/admin` tidak bisa diakses tanpa session.
+- [x] Daftar event menampilkan data admin (termasuk Draft/Cancelled).
+
+**Catatan implementasi Fase 1**
+
+- `web/middleware.ts` diganti menjadi `web/proxy.ts` mengikuti konvensi Next.js 16.
+- Auth browser memakai `ticketin_admin_access` dan `ticketin_admin_refresh` (HttpOnly, SameSite=Lax); Bearer tetap didukung untuk mobile.
+- API daftar event sekarang mengembalikan `registrantsCount` dan tidak lagi mengirim hash PIN ke browser.
+- `/admin/events/[eventId]` sudah menampilkan ringkasan read-only dan metrik; aksi edit/publish/delete, form builder, dan tool lainnya menyusul di fase berikutnya.
+- `/admin/events/new` masih placeholder sampai wizard create event di Fase 2.
+- 39 unit test lulus; `lint`, `typecheck`, `test`, dan `build` hijau.
 
 ### Fase 2 — Create/edit event + media (2–3 hari)
 

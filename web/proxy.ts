@@ -4,6 +4,13 @@ import { createClient } from '@supabase/supabase-js';
 import { isAdminUser } from '@/lib/security/auth';
 import { getApiAccessPolicy } from '@/lib/security/apiAccessPolicy';
 import { verifyVolunteerToken } from '@/lib/security/jwt';
+import {
+  ADMIN_ACCESS_COOKIE,
+  ADMIN_REFRESH_COOKIE,
+  clearAdminSessionCookies,
+  isSameOriginRequest,
+  isUnsafeHttpMethod,
+} from '@/lib/security/adminCookies';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -73,9 +80,22 @@ function isInvalidSupabaseAuthError(error: unknown): boolean {
     || candidate.code === 'invalid_token';
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const url = req.nextUrl;
   const startedAt = Date.now();
+
+  // The admin shell contains no sensitive server-rendered data; all admin data
+  // is fetched through authenticated APIs.
+  const isAdminPage = url.pathname === '/admin' || url.pathname.startsWith('/admin/');
+  const isAdminLoginPage = url.pathname === '/admin/login' || url.pathname === '/admin/login/';
+  if (isAdminPage && isAdminLoginPage) {
+    const hasAccessCookie = Boolean(req.cookies.get(ADMIN_ACCESS_COOKIE)?.value);
+    const hasRefreshCookie = Boolean(req.cookies.get(ADMIN_REFRESH_COOKIE)?.value);
+    if (hasAccessCookie || hasRefreshCookie) {
+      logMiddlewareTiming(req, 'redirectDecision', startedAt);
+      return NextResponse.redirect(new URL('/admin', req.url));
+    }
+  }
 
   // Extract token verification logic
   async function verifyToken(token: string): Promise<TokenVerification> {
@@ -132,6 +152,55 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  if (isAdminPage && !isAdminLoginPage) {
+    const accessToken = req.cookies.get(ADMIN_ACCESS_COOKIE)?.value;
+    const refreshToken = req.cookies.get(ADMIN_REFRESH_COOKIE)?.value;
+    const loginUrl = new URL('/admin/login', req.url);
+    const nextPath = `${url.pathname}${url.search}`;
+    if (nextPath !== '/admin') loginUrl.searchParams.set('next', nextPath);
+
+    if (!accessToken && !refreshToken) {
+      logMiddlewareTiming(req, 'redirectDecision', startedAt);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    const secFetchDest = req.headers.get('sec-fetch-dest')?.toLowerCase();
+    const accept = req.headers.get('accept')?.toLowerCase() ?? '';
+    const isDocumentLoad = secFetchDest
+      ? secFetchDest === 'document'
+      : accept.includes('text/html');
+
+    // Client-side RSC navigations are cheap: the admin APIs remain the
+    // authorization boundary. Direct document loads also verify the access
+    // token so an arbitrary cookie cannot open the console shell.
+    if (accessToken && isDocumentLoad) {
+      const verification = await verifyToken(accessToken);
+      if (verification.valid && verification.role === 'admin') {
+        logMiddlewareTiming(req, 'redirectDecision', startedAt);
+        return NextResponse.next();
+      }
+
+      // Temporary auth-provider failure must not force a logout. The client
+      // provider will show a retry state instead.
+      if (verification.failure === 'unavailable') {
+        logMiddlewareTiming(req, 'redirectDecision', startedAt);
+        return NextResponse.next();
+      }
+
+      if (!refreshToken) {
+        const response = NextResponse.redirect(loginUrl);
+        clearAdminSessionCookies(response);
+        logMiddlewareTiming(req, 'redirectDecision', startedAt);
+        return response;
+      }
+    }
+
+    // Missing/expired access with a refresh cookie is allowed so the client
+    // auth provider can rotate the session before rendering shared data.
+    logMiddlewareTiming(req, 'redirectDecision', startedAt);
+    return NextResponse.next();
+  }
+
   // Protect scanner page at the middleware level (Verify Token deeply)
   const scannerPath = url.pathname.match(/^\/([^/]+)\/checkin\/(scan|manual)\/?$/);
   if (scannerPath) {
@@ -176,10 +245,36 @@ export async function middleware(req: NextRequest) {
     // Verifikasi Token untuk Endpoint Terproteksi
     const authHeader = req.headers.get('authorization');
     const authorizationToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
-    const token = authorizationToken || req.cookies.get('volunteer_token')?.value;
+    const volunteerCookieToken = req.cookies.get('volunteer_token')?.value;
+    const adminCookieToken = req.cookies.get(ADMIN_ACCESS_COOKIE)?.value;
+
+    // Volunteer endpoints must keep using the volunteer cookie even when the
+    // same browser also holds an admin session (for example during UAT).
+    const token = accessPolicy === 'volunteer'
+      ? (authorizationToken || volunteerCookieToken || adminCookieToken)
+      : (authorizationToken || adminCookieToken || volunteerCookieToken);
+    const tokenSource = authorizationToken
+      ? 'bearer'
+      : token === adminCookieToken
+        ? 'admin-cookie'
+        : 'volunteer-cookie';
+
     if (!token) {
       logMiddlewareTiming(req, 'redirectDecision', startedAt);
       return NextResponse.json({ status: 'error', message: 'Unauthorized: Missing Token' }, { status: 401 });
+    }
+
+    if (
+      accessPolicy === 'admin'
+      && tokenSource === 'admin-cookie'
+      && isUnsafeHttpMethod(req.method)
+      && !isSameOriginRequest(req)
+    ) {
+      logMiddlewareTiming(req, 'redirectDecision', startedAt);
+      return NextResponse.json(
+        { status: 'error', message: 'Invalid request origin' },
+        { status: 403 },
+      );
     }
 
     logMiddlewareTiming(req, 'parseToken', startedAt);

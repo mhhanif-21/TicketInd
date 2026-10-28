@@ -36,7 +36,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const { id } = await params;
     const isAdminDetail = uuidRegex.test(id);
     if (isAdminDetail && !await getAuthenticatedAdmin(req)) {
-      return NextResponse.json({ status: 'error', message: 'Unauthorized' }, { status: 403 });
+      return NextResponse.json({ status: 'error', message: 'Unauthorized' }, { status: 401 });
     }
 
     const [event] = await db

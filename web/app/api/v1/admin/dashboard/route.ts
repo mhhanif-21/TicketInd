@@ -28,6 +28,8 @@ export async function GET(request: Request) {
       slug: events.slug,
       date: events.date,
       location: events.location,
+      posterUrl: events.posterUrl,
+      status: events.status,
       createdAt: events.createdAt,
       capacity: events.capacity,
       registrants_count: sql<number>`(
@@ -45,6 +47,8 @@ export async function GET(request: Request) {
       slug: events.slug,
       date: events.date,
       location: events.location,
+      posterUrl: events.posterUrl,
+      status: events.status,
       registrants_count: sql<number>`(
         SELECT COUNT(*)::int FROM registrations r
         WHERE r.event_id = ${events.id}
