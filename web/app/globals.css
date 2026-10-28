@@ -5,7 +5,7 @@
   --foreground: #171717;
 }
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -103,6 +103,63 @@
 :root.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+}
+
+/* Admin-only dark palette. Scoping the token overrides keeps the public site's
+   existing dark styles untouched while every admin surface switches together. */
+.admin-theme {
+  color-scheme: light;
+}
+
+:root.dark .admin-theme {
+  color-scheme: dark;
+  --color-background: #0a0b0c;
+  --color-foreground: #f1f2f3;
+  --color-on-background: #f1f2f3;
+  --color-surface: #101214;
+  --color-surface-bright: #17191c;
+  --color-surface-dim: #0b0d0f;
+  --color-surface-container-lowest: #17191c;
+  --color-surface-container-low: #1c1f22;
+  --color-surface-container: #232629;
+  --color-surface-container-high: #2c3034;
+  --color-surface-container-highest: #353a3f;
+  --color-surface-variant: #2c3034;
+  --color-on-surface: #f1f2f3;
+  --color-on-surface-variant: #b6bbc1;
+  --color-secondary: #9da3aa;
+  --color-outline: #8b9198;
+  --color-outline-variant: #3b4046;
+  --color-primary: #f3f4f5;
+  --color-on-primary: #111315;
+  --color-primary-container: #2a2e33;
+  --color-on-primary-container: #e7e9eb;
+  --color-secondary-container: #2b2f34;
+  --color-on-secondary-container: #dfe3e7;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #8c1d18;
+  --color-on-error-container: #ffdad6;
+  --color-inverse-surface: #e6e8ea;
+  --color-inverse-on-surface: #2b2f33;
+  --color-inverse-primary: #5f6368;
+  --color-surface-tint: #c6c7c9;
+  --color-primary-fixed: #2a2e33;
+  --color-primary-fixed-dim: #3b4046;
+  --color-on-primary-fixed: #f1f2f3;
+  --color-on-primary-fixed-variant: #c6c7c9;
+  --color-secondary-fixed: #2b2f34;
+  --color-secondary-fixed-dim: #3b4046;
+  --color-on-secondary-fixed: #f1f2f3;
+  --color-on-secondary-fixed-variant: #c6c7c9;
+  --color-tertiary: #f1f2f3;
+  --color-on-tertiary: #111315;
+  --color-tertiary-container: #2a2e33;
+  --color-on-tertiary-container: #e7e9eb;
+  --color-tertiary-fixed: #2a2e33;
+  --color-tertiary-fixed-dim: #3b4046;
+  --color-on-tertiary-fixed: #f1f2f3;
+  --color-on-tertiary-fixed-variant: #c6c7c9;
 }
 
 body {

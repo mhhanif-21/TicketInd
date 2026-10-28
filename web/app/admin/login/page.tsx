@@ -75,7 +75,7 @@ export default function AdminLoginPage() {
 
   return (
     <main className="min-h-screen bg-surface font-body-md text-on-surface lg:grid lg:grid-cols-[1.05fr_1fr]">
-      <section className="relative hidden overflow-hidden bg-primary px-12 py-14 text-on-primary lg:flex lg:flex-col lg:justify-between">
+      <section className="relative hidden overflow-hidden bg-[#0b0d0f] px-12 py-14 text-white lg:flex lg:flex-col lg:justify-between">
         <div
           aria-hidden="true"
           className="absolute -right-24 -top-24 h-80 w-80 rounded-full border border-white/10"
@@ -172,7 +172,7 @@ export default function AdminLoginPage() {
             {error ? (
               <div
                 role="alert"
-                className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 font-description text-sm text-red-800"
+                className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 font-description text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
               >
                 {error}
               </div>

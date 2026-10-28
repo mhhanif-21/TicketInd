@@ -81,7 +81,7 @@ export function CopyButton({
       title={copied ? 'Copied' : label}
       className={cn(
         'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface transition-colors hover:bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary',
-        copied && 'border-emerald-200 bg-emerald-50 text-emerald-700',
+        copied && 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300',
         className,
       )}
     >

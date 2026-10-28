@@ -323,7 +323,7 @@ export default function AdminEventDetailPage() {
           </section>
 
           {event.status === 'Draft' ? (
-            <section className="rounded-2xl border border-outline-variant bg-primary p-5 text-on-primary">
+            <section className="rounded-2xl border border-outline-variant bg-[#111315] p-5 text-white">
               <div className="flex items-start gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
                   <Globe aria-hidden="true" className="h-4 w-4" />
@@ -339,7 +339,7 @@ export default function AdminEventDetailPage() {
               <button
                 type="button"
                 onClick={() => setConfirmAction('publish')}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-primary transition-transform hover:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#111315] transition-transform hover:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#111315]"
               >
                 <Globe aria-hidden="true" className="h-4 w-4" />
                 Publish event
@@ -399,14 +399,14 @@ export default function AdminEventDetailPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-red-200 bg-red-50/60 p-5">
+      <section className="rounded-2xl border border-red-200 bg-red-50/60 p-5 dark:border-red-900/60 dark:bg-red-950/25">
         <div className="flex items-start gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-800">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300">
             <XCircle aria-hidden="true" className="h-4 w-4" />
           </span>
           <div className="min-w-0 flex-1">
-            <h2 className="text-sm font-semibold text-red-950">Danger zone</h2>
-            <p className="mt-1 font-description text-xs leading-relaxed text-red-900/70">
+            <h2 className="text-sm font-semibold text-red-950 dark:text-red-200">Danger zone</h2>
+            <p className="mt-1 font-description text-xs leading-relaxed text-red-900/70 dark:text-red-200/70">
               Cancelling stops new registrations. Deleting removes the event, form, registrations,
               tickets, and stored files permanently.
             </p>
@@ -415,7 +415,7 @@ export default function AdminEventDetailPage() {
                 <button
                   type="button"
                   onClick={() => setConfirmAction('cancel')}
-                  className="inline-flex items-center gap-2 rounded-xl border border-red-300 bg-surface-container-lowest px-3.5 py-2 text-sm font-semibold text-red-800 transition-colors hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600"
+                  className="inline-flex items-center gap-2 rounded-xl border border-red-300 bg-surface-container-lowest px-3.5 py-2 text-sm font-semibold text-red-800 transition-colors hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600 dark:border-red-800 dark:bg-red-950/30 dark:text-red-200 dark:hover:bg-red-950/50"
                 >
                   <XCircle aria-hidden="true" className="h-4 w-4" />
                   Cancel event

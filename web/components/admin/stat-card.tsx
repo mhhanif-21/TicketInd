@@ -5,8 +5,8 @@ type StatTone = 'default' | 'success' | 'warning';
 
 const toneStyles: Record<StatTone, string> = {
   default: 'bg-surface-container text-on-surface',
-  success: 'bg-emerald-50 text-emerald-700',
-  warning: 'bg-amber-50 text-amber-700',
+  success: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300',
+  warning: 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300',
 };
 
 export function StatCard({

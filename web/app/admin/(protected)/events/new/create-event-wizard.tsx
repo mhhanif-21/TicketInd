@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -19,7 +20,6 @@ import {
 } from 'lucide-react';
 import { EventDetailsFields } from '@/components/admin/event-details-fields';
 import { FormBuilderStep } from '@/components/admin/form-builder-step';
-import { ImageCropQueue } from '@/components/admin/image-cropper';
 import { ImageUploader } from '@/components/admin/image-uploader';
 import { PageHeader } from '@/components/admin/page-header';
 import { PageLoadingSkeleton } from '@/components/admin/loading-skeleton';
@@ -61,6 +61,21 @@ import { invalidateEventQueries } from '@/lib/admin/queries/events';
 import type { AdminEventDetail, AdminEventWriteResponse } from '@/lib/admin/types';
 import { validateEventImageFile } from '@/lib/admin/image-validation';
 import { formatEventDateTime } from '@/lib/admin/format';
+
+const ImageCropQueue = dynamic(
+  () => import('@/components/admin/image-cropper').then((mod) => mod.ImageCropQueue),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/40">
+        <span className="flex items-center gap-2 rounded-xl bg-surface-container-lowest px-4 py-3 text-sm font-medium text-on-surface shadow-lg">
+          <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+          Opening image editor…
+        </span>
+      </div>
+    ),
+  },
+);
 
 const steps = ['Details & media', 'Registration form', 'Ticket template', 'Review & publish'];
 const sectionClassName = 'rounded-2xl border border-outline-variant bg-surface-container-lowest p-4 shadow-[0_4px_12px_rgba(0,0,0,0.04)] sm:p-6';

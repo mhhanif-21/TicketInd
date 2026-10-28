@@ -3,38 +3,38 @@ import { cn } from '@/lib/admin/format';
 const statusStyles: Record<string, { label: string; className: string; dot: string }> = {
   Published: {
     label: 'Published',
-    className: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-    dot: 'bg-emerald-500',
+    className: 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300',
+    dot: 'bg-emerald-500 dark:bg-emerald-400',
   },
   Draft: {
     label: 'Draft',
-    className: 'border-amber-200 bg-amber-50 text-amber-800',
-    dot: 'bg-amber-500',
+    className: 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300',
+    dot: 'bg-amber-500 dark:bg-amber-400',
   },
   Cancelled: {
     label: 'Cancelled',
-    className: 'border-red-200 bg-red-50 text-red-800',
-    dot: 'bg-red-500',
+    className: 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300',
+    dot: 'bg-red-500 dark:bg-red-400',
   },
   Pending: {
     label: 'Pending',
-    className: 'border-amber-200 bg-amber-50 text-amber-800',
-    dot: 'bg-amber-500',
+    className: 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300',
+    dot: 'bg-amber-500 dark:bg-amber-400',
   },
   Accepted: {
     label: 'Accepted',
-    className: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-    dot: 'bg-emerald-500',
+    className: 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300',
+    dot: 'bg-emerald-500 dark:bg-emerald-400',
   },
   Rejected: {
     label: 'Rejected',
-    className: 'border-red-200 bg-red-50 text-red-800',
-    dot: 'bg-red-500',
+    className: 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300',
+    dot: 'bg-red-500 dark:bg-red-400',
   },
   Expired: {
     label: 'Expired',
-    className: 'border-slate-200 bg-slate-50 text-slate-700',
-    dot: 'bg-slate-400',
+    className: 'border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300',
+    dot: 'bg-slate-400 dark:bg-slate-500',
   },
 };
 
@@ -72,14 +72,14 @@ export function AttendanceBadge({
       className={cn(
         'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-label-caps text-[10px] font-semibold uppercase tracking-[0.08em]',
         present
-          ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+          ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
           : 'border-outline-variant bg-surface-container text-on-surface-variant',
         className,
       )}
     >
       <span
         aria-hidden="true"
-        className={cn('h-1.5 w-1.5 rounded-full', present ? 'bg-emerald-500' : 'bg-secondary')}
+        className={cn('h-1.5 w-1.5 rounded-full', present ? 'bg-emerald-500 dark:bg-emerald-400' : 'bg-secondary')}
       />
       {present ? 'Present' : 'Not present'}
     </span>

@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
+import { AdminThemeToggle } from '@/components/admin/admin-theme';
 import { useAdminAuth } from '@/lib/admin/auth-provider';
 import { cn, initials } from '@/lib/admin/format';
 
@@ -70,6 +71,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-surface font-body-md text-on-surface">
+      <a
+        href="#admin-main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-on-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      >
+        Skip to main content
+      </a>
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-outline-variant lg:block">
         <AdminSidebar />
       </aside>
@@ -114,11 +121,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
               <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-secondary">
                 <span>Admin</span>
                 <span aria-hidden="true">/</span>
-                <span className="truncate font-semibold text-on-surface">
+                <span className="truncate font-semibold text-on-surface" aria-current="page">
                   {titleForPath(pathname)}
                 </span>
               </nav>
             </div>
+
+            <AdminThemeToggle />
 
             <Link
               href="/"
@@ -183,7 +192,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-[1280px] px-4 py-6 md:px-6 md:py-8 lg:px-8">
+        <main id="admin-main" className="mx-auto w-full max-w-[1280px] px-4 py-6 md:px-6 md:py-8 lg:px-8">
           {children}
         </main>
       </div>

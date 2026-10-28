@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -22,7 +23,6 @@ import { EmailTemplateSection } from '@/components/admin/email-template-section'
 import { EmptyState } from '@/components/admin/empty-state';
 import { PageLoadingSkeleton } from '@/components/admin/loading-skeleton';
 import { StatusBadge } from '@/components/admin/status-badge';
-import { TicketCanvasEditor } from '@/components/admin/ticket-canvas-editor';
 import { TicketCanvasPreview } from '@/components/admin/ticket-canvas-preview';
 import { DefaultTicketPreview } from '@/components/admin/ticket-default-preview';
 import { useToast } from '@/components/admin/toast';
@@ -42,6 +42,21 @@ import {
 } from '@/lib/admin/ticket-template';
 import type { AdminEventDetail } from '@/lib/admin/types';
 import { cn } from '@/lib/admin/format';
+
+const TicketCanvasEditor = dynamic(
+  () => import('@/components/admin/ticket-canvas-editor').then((mod) => mod.TicketCanvasEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="fixed inset-0 z-[95] flex items-center justify-center bg-[#1d1d1d]">
+        <span className="flex items-center gap-2 text-sm font-medium text-white">
+          <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+          Loading ticket canvas…
+        </span>
+      </div>
+    ),
+  },
+);
 
 function imageAspectRatio(source: string): Promise<number | null> {
   return new Promise((resolve) => {
@@ -332,7 +347,7 @@ function TicketWorkspace({
             </span>
             <span className={cn(
               'mt-1 block font-description text-xs',
-              mode === 'default' ? 'text-white/75' : 'text-on-surface-variant',
+              mode === 'default' ? 'text-on-primary/75' : 'text-on-surface-variant',
             )}>
               Ready to use. No image upload needed.
             </span>
@@ -355,7 +370,7 @@ function TicketWorkspace({
             </span>
             <span className={cn(
               'mt-1 block font-description text-xs',
-              mode === 'custom' ? 'text-white/75' : 'text-on-surface-variant',
+              mode === 'custom' ? 'text-on-primary/75' : 'text-on-surface-variant',
             )}>
               Upload a design and place data elements on the canvas.
             </span>

@@ -35,7 +35,7 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 const variantStyles: Record<ToastVariant, { icon: typeof CheckCircle2; iconClass: string }> = {
-  success: { icon: CheckCircle2, iconClass: 'text-emerald-600' },
+  success: { icon: CheckCircle2, iconClass: 'text-emerald-600 dark:text-emerald-400' },
   error: { icon: AlertCircle, iconClass: 'text-error' },
   info: { icon: Info, iconClass: 'text-secondary' },
 };

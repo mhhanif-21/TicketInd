@@ -27,8 +27,8 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/admin/events', label: 'Events', icon: CalendarDays },
-  { href: '/admin/oversight', label: 'Oversight', icon: ChartNoAxesCombined, disabled: true },
-  { href: '/admin/manual-book', label: 'Manual book', icon: BookOpen, disabled: true },
+  { href: '/admin/oversight', label: 'Oversight', icon: ChartNoAxesCombined },
+  { href: '/admin/manual-book', label: 'Manual book', icon: BookOpen },
 ];
 
 function isActivePath(pathname: string, item: NavItem): boolean {

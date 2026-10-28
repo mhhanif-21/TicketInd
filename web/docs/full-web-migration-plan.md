@@ -461,14 +461,29 @@ Status: **Selesai** — 28 Oktober 2026.
 
 ### Fase 6 — Oversight, manual book, polish (1–2 hari)
 
-- [ ] `/admin/oversight`: total events, registrations, present, attendance rate, upcoming events.
-- [ ] `/admin/manual-book`: port konten panduan, sesuaikan istilah web.
-- [ ] Dark mode konsisten.
-- [ ] Aksesibilitas: label, focus ring, keyboard navigation, aria.
-- [ ] Loading skeleton, error boundary, not-found.
-- [ ] Responsive QA di 360px, 768px, 1024px, 1440px.
-- [ ] Empty state untuk semua list.
-- [ ] Optimasi query dan bundle.
+Status: **Selesai** — 28 Oktober 2026.
+
+- [x] `/admin/oversight`: total events, registrations, present, attendance rate, upcoming events.
+- [x] `/admin/manual-book`: port konten panduan, sesuaikan istilah web.
+- [x] Dark mode konsisten.
+- [x] Aksesibilitas: label, focus ring, keyboard navigation, aria.
+- [x] Loading skeleton, error boundary, not-found.
+- [x] Responsive QA di 360px, 768px, 1024px, 1440px.
+- [x] Empty state untuk semua list.
+- [x] Optimasi query dan bundle.
+
+**Catatan implementasi Fase 6**
+
+- `/admin/oversight` memakai query dashboard yang sama dengan `/admin` (cache TanStack Query) dan menampilkan total event, registrasi, present, attendance rate, progress bar kehadiran, serta daftar upcoming events. Refresh manual tetap tersedia.
+- `/admin/manual-book` berisi 13 bagian panduan dengan istilah admin web terbaru: auth, create event, form builder, mode pendaftaran, OTP, review peserta, tiket/QR, WhatsApp, template email, access/scanner, export CSV, status peserta, serta tema/aksesibilitas. Bagian memakai elemen native `<details>` sehingga bisa dibuka dengan keyboard tanpa JavaScript tambahan.
+- Sidebar sekarang mengaktifkan menu Oversight dan Manual book.
+- Dark mode memakai token admin yang di-scope melalui `.admin-theme`. `@theme inline` diubah menjadi `@theme` agar utility Tailwind membaca CSS variables, lalu palet gelap khusus admin diterapkan tanpa mengubah tema publik. Toggle tema ada di topbar, tersimpan di `localStorage`, dan diinisialisasi lewat script di layout admin agar pilihan bertahan antarhalaman tanpa flash tema.
+- Komponen bersama (status badge, attendance badge, stat card, toast, copy button), login, danger zone event, dan tombol pilihan tiket sudah disesuaikan untuk dark mode. Panel hitam pada login dan CTA publish event dipertahankan gelap agar teks putih tetap terbaca.
+- Aksesibilitas: skip-to-content link, focus ring konsisten, label pada kontrol, `aria-current` pada breadcrumb/sidebar, `aria-pressed` pada toggle tema, `aria-live` pada status export, serta Escape untuk drawer/dialog.
+- Special files Next.js: `app/admin/(protected)/loading.tsx`, error boundary di level protected dan admin dengan `unstable_retry`, serta halaman `not-found` global dan admin.
+- Responsive QA dijalankan dengan Chromium headless pada lebar 360, 768, 1024, dan 1440 menggunakan intersepsi API tersimulasi. Tidak ditemukan overflow horizontal; drawer mobile, toggle tema, dan halaman 404 berfungsi.
+- Optimasi: `ImageCropQueue` dan `TicketCanvasEditor` di-lazy-load dengan `next/dynamic`; query dashboard dipakai bersama oleh Dashboard dan Oversight dengan `staleTime` 15 detik.
+- 83 unit test lulus; `lint` 0 error, `typecheck`, `test`, dan `build` hijau.
 
 ### Fase 7 — Decommission mobile (1 hari, setelah sign-off)
 
